@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -22,6 +23,9 @@ public class UserEntity extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
     private String nickname;
 
     @Column(nullable = false)
@@ -29,5 +33,12 @@ public class UserEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL)
     private List<PlantEntity> plantEntities = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_authority",
+            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+    private Set<AuthorityEntity> authorities;
 
 }
