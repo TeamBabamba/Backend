@@ -31,14 +31,7 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String profileImgUrl;
 
-    @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PlantEntity> plantEntities = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<AuthorityEntity> authorities;
 
 }
