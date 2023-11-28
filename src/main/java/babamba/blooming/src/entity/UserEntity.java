@@ -28,7 +28,7 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column()
     private String profileImgUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
