@@ -26,6 +26,6 @@ public class ManageEntity extends BaseEntity {
     private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id")
-    private TagEntity tagEntity;
+    @JoinColumn(name = "plant_id")
+    private PlantEntity plant;
 }

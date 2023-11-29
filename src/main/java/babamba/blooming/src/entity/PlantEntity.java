@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "Plant")
@@ -37,5 +40,8 @@ public class PlantEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plant_category_id")
     private PlantCategoryEntity plantCategoryEntity;
+
+    @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL)
+    private List<ManageEntity> manageEntities = new ArrayList<>();
 
 }
