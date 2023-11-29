@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "Manage")
+@Table(name = "PushAlarm")
 @NoArgsConstructor
 public class PushAlarmEntity extends BaseEntity {
     @Id
