@@ -33,6 +33,15 @@ public class PlantEntity extends BaseEntity {
     @Column(nullable = false)
     private String recommendManagement;
 
+    @Column
+    private Double temperature;
+
+    @Column
+    private Double humidity;
+
+    @Column
+    private Integer light;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity user;
