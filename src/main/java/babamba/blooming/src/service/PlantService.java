@@ -3,6 +3,8 @@ package babamba.blooming.src.service;
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.Status;
 import babamba.blooming.src.dto.response.GetHomeDto;
+import babamba.blooming.src.dto.response.GetPlantDetailsDto;
+import babamba.blooming.src.dto.response.ManageLog;
 import babamba.blooming.src.entity.ManageEntity;
 import babamba.blooming.src.entity.PlantCategoryEntity;
 import babamba.blooming.src.entity.PlantEntity;
@@ -22,8 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static babamba.blooming.config.BaseResponseStatus.INVALID_PLANT_CATEGORY;
-import static babamba.blooming.config.BaseResponseStatus.NOT_ACTIVATED_USER;
+import static babamba.blooming.config.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +89,66 @@ public class PlantService {
 
             response.add(getHomeDto);
         }
+
+        return response;
+    }
+
+    public GetPlantDetailsDto getPlantDetails(Long userId, Long plantId) throws BaseException {
+        UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+
+        PlantEntity plantEntity = plantRepository.findByIdAndStatus(plantId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_PLANT));
+
+        GetPlantDetailsDto response = new GetPlantDetailsDto();
+
+        response.setPlantId(plantId);
+        response.setPlantNickname(plantEntity.getPlantNickname());
+        response.setCategoryName(plantEntity.getPlantCategoryEntity().getCategoryName());
+        response.setCreatedAt(plantEntity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+        response.setImgUrl(plantEntity.getImgUrl());
+        response.setPlantState(plantEntity.getPlantState());
+        response.setRecommendManagement(plantEntity.getRecommendManagement());
+
+        // 온도 갱신
+        if (plantEntity.getTemperature() == null) {
+            response.setTemperature("잠시 후에 업데이트");
+        }
+        else {
+            response.setTemperature(plantEntity.getTemperature().toString() + "도");
+        }
+
+        // 습도 갱신
+        if (plantEntity.getHumidity() == null) {
+            response.setHumidity("잠시 후에 업데이트");
+        }
+        else {
+            response.setHumidity(plantEntity.getHumidity().toString() + "%");
+        }
+
+        // 조도 갱신
+        if (plantEntity.getLight() == null) {
+            response.setLight("잠시 후에 업데이트");
+        }
+        else {
+            response.setLight(plantEntity.getLight().toString());
+        }
+
+        List<ManageEntity> manageEntities = manageRepository.findAllByPlantAndStatusOrderByCreatedAtDesc(plantEntity, Status.ACTIVE);
+
+        List<ManageLog> manageLogs = new ArrayList<>();
+
+        for (ManageEntity manageEntity : manageEntities) {
+            ManageLog manageLog = new ManageLog();
+
+            String message = plantEntity.getPlantNickname() + " \'" + manageEntity.getContents() + "\'를 완료했어요";
+            manageLog.setMessage(message);
+
+            manageLog.setCreatedAt(manageEntity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+            manageLogs.add(manageLog);
+        }
+
+        response.setManageLogs(manageLogs);
 
         return response;
     }
