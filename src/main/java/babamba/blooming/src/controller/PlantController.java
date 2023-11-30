@@ -3,6 +3,7 @@ package babamba.blooming.src.controller;
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.BaseResponse;
 import babamba.blooming.src.dto.response.GetHomeDto;
+import babamba.blooming.src.dto.response.GetPlantDetailsDto;
 import babamba.blooming.src.service.PlantService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -29,6 +30,22 @@ public class PlantController {
             Long userId = 1L;
 
             return new BaseResponse<>(plantService.getHome(userId, type));
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 특정 식물 상세 조회
+     */
+    @GetMapping("/details/{plantId}")
+    @Operation(summary = "특정 식물 상세 조회", description = "")
+    public BaseResponse<GetPlantDetailsDto> getPlantDetails(@PathVariable("plantId") Long plantId) {
+        try {
+            Long userId = 1L;
+
+            return new BaseResponse<>(plantService.getPlantDetails(userId, plantId));
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
