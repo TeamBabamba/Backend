@@ -152,4 +152,16 @@ public class PlantService {
 
         return response;
     }
+
+    public void deletePlantDetails(Long userId, Long plantId) {
+        UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+
+        PlantEntity plantEntity = plantRepository.findByIdAndStatus(plantId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_PLANT));
+
+        plantEntity.setStatus(Status.INACTIVE);
+
+        plantRepository.save(plantEntity);
+    }
 }
