@@ -63,6 +63,7 @@ public enum BaseResponseStatus {
     INVALID_USERTYPE(false,3025,"잘못된 사용자 타입입니다."),
     NOT_ACTIVATED_PROBLEM(false,3030,"유효한 문제가 아닙니다."),
     INVALID_PLANT_CATEGORY(false,3035,"잘못된 식물 카테고리 입니다."),
+    NOT_ACTIVATED_PLANT(false,3040,"유효한 식물이 아닙니다."),
 
 
     /**
