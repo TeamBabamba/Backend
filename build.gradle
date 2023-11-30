@@ -54,6 +54,9 @@ dependencies {
 
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// ChatGPT
+	implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.4'
 }
 
 tasks.named('test') {
