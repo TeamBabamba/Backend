@@ -12,5 +12,7 @@ import java.util.List;
 @Repository
 public interface ManageRepository extends JpaRepository<ManageEntity, Long> {
 
+    List<ManageEntity> findAllByPlantAndStatusOrderByCreatedAtDesc(PlantEntity plantEntity, Status status);
+
     List<ManageEntity> findAllByPlantAndCreatedAtAfterAndStatus(PlantEntity plantEntity, LocalDateTime createdAt, Status status);
 }
