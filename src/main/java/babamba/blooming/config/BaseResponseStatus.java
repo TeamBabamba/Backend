@@ -51,6 +51,8 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_PRIVACY(false,2080,"개인정보 약관 동의가 필요합니다."),
     POST_USERS_INVALID_PRIVACY(false,2081,"잘못된 개인정보 약관 동의입니다."),
 
+    FAILED_TO_SAVE_IMG(false,2090,"이미지 저장에 실패하였습니다."),
+
     /**
      * 3000 : Response 오류
      */
