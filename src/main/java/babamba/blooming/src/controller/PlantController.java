@@ -4,6 +4,7 @@ import babamba.blooming.config.BaseException;
 import babamba.blooming.config.BaseResponse;
 import babamba.blooming.src.dto.request.DeletePlantDto;
 import babamba.blooming.src.dto.response.GetHomeDto;
+import babamba.blooming.src.dto.response.GetManagementDto;
 import babamba.blooming.src.dto.response.GetPlantDetailsDto;
 import babamba.blooming.src.dto.response.GetTreatmentDto;
 import babamba.blooming.src.service.PlantService;
@@ -76,10 +77,10 @@ public class PlantController {
     }
 
     /**
-     * 식물 사진 분석
+     * 식물 사진 분석(AI 추천 치료법)
      */
     @PostMapping("/treatments")
-    @Operation(summary = "식물 사진 분석", description = "")
+    @Operation(summary = "식물 사진 분석(AI 추천 치료법)", description = "")
     public BaseResponse<GetTreatmentDto> getTreatment(@RequestPart("file") MultipartFile multipartFile) {
         try {
             Long userId = 1L;
@@ -93,5 +94,21 @@ public class PlantController {
         }
     }
 
+
+    /**
+     * 식물 사진 분석(관리하기 탭)
+     */
+    @GetMapping("/managements")
+    @Operation(summary = "식물 사진 분석(관리하기 탭) 조회", description = "")
+    public BaseResponse<List<GetManagementDto>> getManagement() {
+        try {
+            Long userId = 1L;
+
+            return new BaseResponse<>(plantService.getManagement(userId));
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }
