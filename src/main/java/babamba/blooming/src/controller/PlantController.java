@@ -3,6 +3,7 @@ package babamba.blooming.src.controller;
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.BaseResponse;
 import babamba.blooming.src.dto.request.DeletePlantDto;
+import babamba.blooming.src.dto.request.PostCreatePlantDto;
 import babamba.blooming.src.dto.response.GetHomeDto;
 import babamba.blooming.src.dto.response.GetManagementDto;
 import babamba.blooming.src.dto.response.GetPlantDetailsDto;
@@ -105,6 +106,24 @@ public class PlantController {
             Long userId = 1L;
 
             return new BaseResponse<>(plantService.getManagement(userId));
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 식물 관리 시작하기
+     */
+    @PostMapping("/managements")
+    @Operation(summary = "식물 관리 시작하기", description = "")
+    public BaseResponse<String> createPlant(@RequestBody PostCreatePlantDto postCreatePlantDto) {
+        try {
+            Long userId = 1L;
+
+            plantService.createPlant(userId, postCreatePlantDto);
+
+            return new BaseResponse<>("식물 관리 목록에 추가되었습니다");
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
