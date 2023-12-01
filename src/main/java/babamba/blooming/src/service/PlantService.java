@@ -2,10 +2,7 @@ package babamba.blooming.src.service;
 
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.Status;
-import babamba.blooming.src.dto.response.GetHomeDto;
-import babamba.blooming.src.dto.response.GetPlantDetailsDto;
-import babamba.blooming.src.dto.response.GetTreatmentDto;
-import babamba.blooming.src.dto.response.ManageLog;
+import babamba.blooming.src.dto.response.*;
 import babamba.blooming.src.entity.ManageEntity;
 import babamba.blooming.src.entity.PlantCategoryEntity;
 import babamba.blooming.src.entity.PlantEntity;
@@ -165,7 +162,7 @@ public class PlantService {
         plantRepository.save(plantEntity);
     }
 
-    public GetTreatmentDto getTreatment(Long userId, String imgUrl) {
+    public GetTreatmentDto getTreatment(Long userId, String imgUrl) throws BaseException {
         UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
 
@@ -251,4 +248,15 @@ public class PlantService {
     }
 
 
+    public List<GetManagementDto> getManagement(Long userId) {
+        List<PlantCategoryEntity> plantCategoryEntities = plantCategoryRepository.findAllByStatus(Status.ACTIVE);
+
+        List<GetManagementDto> response = new ArrayList<>();
+
+        for (PlantCategoryEntity plantCategoryEntity : plantCategoryEntities) {
+            response.add(new GetManagementDto(plantCategoryEntity.getId(), plantCategoryEntity.getCategoryName(), plantCategoryEntity.getWateringCycle()));
+        }
+
+        return response;
+    }
 }
