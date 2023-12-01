@@ -2,6 +2,7 @@ package babamba.blooming.src.service;
 
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.Status;
+import babamba.blooming.src.dto.request.PostCreatePlantDto;
 import babamba.blooming.src.dto.response.*;
 import babamba.blooming.src.entity.ManageEntity;
 import babamba.blooming.src.entity.PlantCategoryEntity;
@@ -249,6 +250,9 @@ public class PlantService {
 
 
     public List<GetManagementDto> getManagement(Long userId) {
+        UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+
         List<PlantCategoryEntity> plantCategoryEntities = plantCategoryRepository.findAllByStatus(Status.ACTIVE);
 
         List<GetManagementDto> response = new ArrayList<>();
@@ -258,5 +262,52 @@ public class PlantService {
         }
 
         return response;
+    }
+
+    public void createPlant(Long userId, PostCreatePlantDto postCreatePlantDto) {
+        UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+
+        PlantCategoryEntity plantCategoryEntity = plantCategoryRepository.findByIdAndStatus(postCreatePlantDto.getPlantCategoryId(), Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_PLANT_CATEGORY));
+
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> planStates = postCreatePlantDto.getPlantStates();
+        for (int i = 0; i < planStates.size(); i++) {
+            stringBuilder.append(planStates.get(i));
+
+            // 마지막 인덱스가 아닌 경우 : 맨 끝에 개행문자 넣기
+            if (i != planStates.size() - 1) {
+                stringBuilder.append("\n");
+            }
+        }
+
+        String plantState = stringBuilder.toString();
+
+        // StringBuilder 초기화
+        stringBuilder.setLength(0);
+
+        List<String> recommendManagements = postCreatePlantDto.getRecommendManagement();
+        for (int i = 0; i < recommendManagements.size(); i++) {
+            stringBuilder.append(recommendManagements.get(i));
+
+            // 마지막 인덱스가 아닌 경우 : 맨 끝에 개행문자 넣기
+            if (i != recommendManagements.size() - 1) {
+                stringBuilder.append("\n");
+            }
+        }
+
+        String recommendManagement = stringBuilder.toString();
+
+        PlantEntity plantEntity = new PlantEntity(
+                plantCategoryEntity.getCategoryName(),
+                postCreatePlantDto.getPlantNickname(),
+                plantState,
+                postCreatePlantDto.getImgUrl(),
+                recommendManagement,
+                userEntity,
+                plantCategoryEntity);
+
+        plantRepository.save(plantEntity);
     }
 }
