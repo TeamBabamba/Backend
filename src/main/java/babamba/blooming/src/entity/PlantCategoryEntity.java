@@ -21,4 +21,7 @@ public class PlantCategoryEntity extends BaseEntity {
     @Column(nullable = false)
     private String categoryName;
 
+    @Column(nullable = false)
+    private Integer wateringCycle;
+
 }
