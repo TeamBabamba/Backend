@@ -53,4 +53,20 @@ public class PlantEntity extends BaseEntity {
     @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL)
     private List<ManageEntity> manageEntities = new ArrayList<>();
 
+
+    public PlantEntity(String plantName,
+                       String plantNickname,
+                       String plantState,
+                       String imgUrl,
+                       String recommendManagement,
+                       UserEntity user,
+                       PlantCategoryEntity plantCategoryEntity) {
+        this.plantName = plantName;
+        this.plantNickname = plantNickname;
+        this.plantState = plantState;
+        this.imgUrl = imgUrl;
+        this.recommendManagement = recommendManagement;
+        this.user = user;
+        this.plantCategoryEntity = plantCategoryEntity;
+    }
 }
