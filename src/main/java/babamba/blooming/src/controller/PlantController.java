@@ -5,11 +5,14 @@ import babamba.blooming.config.BaseResponse;
 import babamba.blooming.src.dto.request.DeletePlantDto;
 import babamba.blooming.src.dto.response.GetHomeDto;
 import babamba.blooming.src.dto.response.GetPlantDetailsDto;
+import babamba.blooming.src.dto.response.GetTreatmentDto;
 import babamba.blooming.src.service.PlantService;
+import babamba.blooming.src.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PlantController {
     private final PlantService plantService;
+    private final S3UploadService s3UploadService;
 
 
     /**
@@ -65,6 +69,24 @@ public class PlantController {
             plantService.deletePlantDetails(userId, deletePlantDto.getPlantId());
 
             return new BaseResponse<>("삭제 성공!");
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 식물 사진 분석
+     */
+    @PostMapping("/treatments")
+    @Operation(summary = "식물 사진 분석", description = "")
+    public BaseResponse<GetTreatmentDto> getTreatment(@RequestPart("file") MultipartFile multipartFile) {
+        try {
+            Long userId = 1L;
+
+            String imgUrl = s3UploadService.saveFile(multipartFile);
+
+            return new BaseResponse<>(plantService.getTreatment(userId, imgUrl));
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
