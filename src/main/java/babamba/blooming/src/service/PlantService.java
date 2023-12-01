@@ -4,6 +4,7 @@ import babamba.blooming.config.BaseException;
 import babamba.blooming.config.Status;
 import babamba.blooming.src.dto.response.GetHomeDto;
 import babamba.blooming.src.dto.response.GetPlantDetailsDto;
+import babamba.blooming.src.dto.response.GetTreatmentDto;
 import babamba.blooming.src.dto.response.ManageLog;
 import babamba.blooming.src.entity.ManageEntity;
 import babamba.blooming.src.entity.PlantCategoryEntity;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static babamba.blooming.config.BaseResponseStatus.*;
 
@@ -34,6 +32,8 @@ public class PlantService {
     private final PlantRepository plantRepository;
     private final ManageRepository manageRepository;
     private final PlantCategoryRepository plantCategoryRepository;
+    private final ColabService colabService;
+    private final ChatService chatService;
 
 
     public List<GetHomeDto> getHome(Long userId, Long plantCategoryId) throws BaseException {
@@ -164,4 +164,91 @@ public class PlantService {
 
         plantRepository.save(plantEntity);
     }
+
+    public GetTreatmentDto getTreatment(Long userId, String imgUrl) {
+        UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+
+        List<String> plantAnalytics = colabService.getPlantAnalytics(imgUrl);
+        String plantCategory = plantAnalytics.get(0);
+        String plantState = plantAnalytics.get(1);
+
+        List<String> numbers = Arrays.asList("1", "2", "3", "4", "5");
+
+        GetTreatmentDto response = new GetTreatmentDto();
+        response.setImgUrl(imgUrl);
+
+        // 잎의 상태 정보 넣기
+        List<String> plantStates = new ArrayList<>();
+        if (plantState.equals("건강")) {
+            plantStates.add("잎의 색이 밝고 생기가 있으며, 잎의 형태 또한 정상이에요");
+            plantStates.add("식물이 매우 건강한 상태에요");
+            response.setPlantState(plantStates);
+        }
+        else {
+            String question = plantState + "에 걸린" + plantCategory + " 잎의 대표적인 특징을 3가지만 말해줘. 답변의 말투는 해요체로 작성해줘. 마지막으로 답변은 부가 설명 없이 엔터로 구분하여 작성해줘";
+            String gptAnswer = chatService.getChatResponse(question, 0.5f, 1000);
+
+            System.out.println("GPT 답변 : " + gptAnswer);
+
+            String[] splitAnswer = gptAnswer.split("\\n");
+
+            for (String ele : splitAnswer) {
+                if (ele.length() == 0) {
+                    continue;
+                }
+
+                String firstString = ele.substring(0, 1);
+                for (int i = 0; i < 5; i++) {
+                    if (firstString.equals(numbers.get(i))) {
+                        plantStates.add(ele.substring(3));
+                    }
+                    else if (firstString.equals("-")) {
+                        plantStates.add(ele.substring(2));
+                    }
+                }
+            }
+
+            response.setPlantState(plantStates);
+        }
+
+        // AI 추천 치료법 넣기
+        List<String> recommendManagement = new ArrayList<>();
+        if (plantState.equals("건강")) {
+            recommendManagement.add("식물의 상태가 매우 건강해요");
+            recommendManagement.add("지금처럼 계속 관리해주세요");
+            response.setPlantState(recommendManagement);
+        }
+        else {
+            String question = plantState + "에 걸린" +  plantCategory + "를 치료할 수 있는 대표적인 방법 구체적으로 5가지만 말해줘. 답변의 말투는 해요체로 작성해줘. 마지막으로 답변은 부가 설명 없이 엔터로 구분하여 작성해줘";
+
+            String gptAnswer = chatService.getChatResponse(question, 0.5f, 1000);
+
+            System.out.println("GPT 답변 : " + gptAnswer);
+
+            String[] splitAnswer = gptAnswer.split("\\n");
+
+            for (String ele : splitAnswer) {
+                if (ele.length() == 0) {
+                    continue;
+                }
+
+                String firstString = ele.substring(0, 1);
+                for (int i = 0; i < 5; i++) {
+                    if (firstString.equals(numbers.get(i))) {
+                        recommendManagement.add(ele.substring(3));
+                    }
+                    else if (firstString.equals("-")) {
+                        plantStates.add(ele.substring(2));
+                    }
+                }
+            }
+
+            response.setRecommendManagement(recommendManagement);
+        }
+
+        return response;
+    }
+
+
 }
