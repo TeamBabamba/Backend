@@ -4,6 +4,7 @@ import babamba.blooming.config.BaseException;
 import babamba.blooming.config.BaseResponse;
 import babamba.blooming.src.dto.request.DeletePlantDto;
 import babamba.blooming.src.dto.request.PostCreatePlantDto;
+import babamba.blooming.src.dto.request.PutPlantDetailsDto;
 import babamba.blooming.src.dto.response.GetHomeDto;
 import babamba.blooming.src.dto.response.GetManagementDto;
 import babamba.blooming.src.dto.response.GetPlantDetailsDto;
@@ -53,6 +54,24 @@ public class PlantController {
             Long userId = 1L;
 
             return new BaseResponse<>(plantService.getPlantDetails(userId, plantId));
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 특정 식물 데이터 수정
+     */
+    @PutMapping("/details")
+    @Operation(summary = "특정 식물 데이터 수정", description = "")
+    public BaseResponse<String> updatePlantDetails(@RequestBody PutPlantDetailsDto putPlantDetailsDto) {
+        try {
+            Long userId = 1L;
+
+            plantService.updatePlantDetails(userId, putPlantDetailsDto);
+
+            return new BaseResponse<>("수정 완료");
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
