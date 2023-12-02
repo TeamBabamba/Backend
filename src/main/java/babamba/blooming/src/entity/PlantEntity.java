@@ -69,4 +69,18 @@ public class PlantEntity extends BaseEntity {
         this.user = user;
         this.plantCategoryEntity = plantCategoryEntity;
     }
+
+    public void updatePlantEntity(String plantName,
+                                  String plantNickname,
+                                  String plantState,
+                                  String imgUrl,
+                                  String recommendManagement,
+                                  PlantCategoryEntity plantCategoryEntity) {
+        this.plantName = plantName;
+        this.plantNickname = plantNickname;
+        this.plantState = plantState;
+        this.imgUrl = imgUrl;
+        this.recommendManagement = recommendManagement;
+        this.plantCategoryEntity = plantCategoryEntity;
+    }
 }
