@@ -3,6 +3,7 @@ package babamba.blooming.src.service;
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.Status;
 import babamba.blooming.src.dto.request.PostCreatePlantDto;
+import babamba.blooming.src.dto.request.PutPlantDetailsDto;
 import babamba.blooming.src.dto.response.*;
 import babamba.blooming.src.entity.ManageEntity;
 import babamba.blooming.src.entity.PlantCategoryEntity;
@@ -178,7 +179,7 @@ public class PlantService {
 
         // 잎의 상태 정보 넣기
         List<String> plantStates = new ArrayList<>();
-        if (plantState.equals("건강")) {
+        if (plantState.equals("healthy")) {
             plantStates.add("잎의 색이 밝고 생기가 있으며, 잎의 형태 또한 정상이에요");
             plantStates.add("식물이 매우 건강한 상태에요");
             response.setPlantState(plantStates);
@@ -212,7 +213,7 @@ public class PlantService {
 
         // AI 추천 치료법 넣기
         List<String> recommendManagement = new ArrayList<>();
-        if (plantState.equals("건강")) {
+        if (plantState.equals("healthy")) {
             recommendManagement.add("식물의 상태가 매우 건강해요");
             recommendManagement.add("지금처럼 계속 관리해주세요");
             response.setPlantState(recommendManagement);
@@ -307,6 +308,56 @@ public class PlantService {
                 recommendManagement,
                 userEntity,
                 plantCategoryEntity);
+
+        plantRepository.save(plantEntity);
+    }
+
+    public void updatePlantDetails(Long userId, PutPlantDetailsDto putPlantDetailsDto) {
+        UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+
+        PlantCategoryEntity plantCategoryEntity = plantCategoryRepository.findByIdAndStatus(putPlantDetailsDto.getPlantCategoryId(), Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_PLANT_CATEGORY));
+
+        PlantEntity plantEntity = plantRepository.findByIdAndStatus(putPlantDetailsDto.getPlantId(), Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_PLANT));
+
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> planStates = putPlantDetailsDto.getPlantStates();
+        for (int i = 0; i < planStates.size(); i++) {
+            stringBuilder.append(planStates.get(i));
+
+            // 마지막 인덱스가 아닌 경우 : 맨 끝에 개행문자 넣기
+            if (i != planStates.size() - 1) {
+                stringBuilder.append("\n");
+            }
+        }
+
+        String plantState = stringBuilder.toString();
+
+        // StringBuilder 초기화
+        stringBuilder.setLength(0);
+
+        List<String> recommendManagements = putPlantDetailsDto.getRecommendManagement();
+        for (int i = 0; i < recommendManagements.size(); i++) {
+            stringBuilder.append(recommendManagements.get(i));
+
+            // 마지막 인덱스가 아닌 경우 : 맨 끝에 개행문자 넣기
+            if (i != recommendManagements.size() - 1) {
+                stringBuilder.append("\n");
+            }
+        }
+
+        String recommendManagement = stringBuilder.toString();
+
+        plantEntity.updatePlantEntity(
+                plantCategoryEntity.getCategoryName(),
+                putPlantDetailsDto.getPlantNickname(),
+                plantState,
+                putPlantDetailsDto.getImgUrl(),
+                recommendManagement,
+                plantCategoryEntity
+        );
 
         plantRepository.save(plantEntity);
     }
