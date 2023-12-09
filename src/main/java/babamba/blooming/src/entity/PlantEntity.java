@@ -83,4 +83,9 @@ public class PlantEntity extends BaseEntity {
         this.recommendManagement = recommendManagement;
         this.plantCategoryEntity = plantCategoryEntity;
     }
+
+    public void updatePlantState(Double temperature, Double humidity) {
+        this.temperature = temperature;
+        this.humidity = humidity;
+    }
 }
