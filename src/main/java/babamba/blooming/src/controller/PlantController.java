@@ -2,6 +2,7 @@ package babamba.blooming.src.controller;
 
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.BaseResponse;
+import babamba.blooming.src.dto.request.UpdatePlantStateDto;
 import babamba.blooming.src.dto.request.DeletePlantDto;
 import babamba.blooming.src.dto.request.PostCreatePlantDto;
 import babamba.blooming.src.dto.request.PutPlantDetailsDto;
@@ -12,13 +13,11 @@ import babamba.blooming.src.dto.response.GetTreatmentDto;
 import babamba.blooming.src.service.PlantService;
 import babamba.blooming.src.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/plants")
@@ -143,6 +142,24 @@ public class PlantController {
             plantService.createPlant(userId, postCreatePlantDto);
 
             return new BaseResponse<>("식물 관리 목록에 추가되었습니다");
+
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 식물 상태 갱신(온도, 습도)
+     */
+    @PostMapping("/state")
+    @Operation(summary = "식물 상태 갱신(온도, 습도)", description = "")
+    public BaseResponse<String> updatePlantState(@RequestBody UpdatePlantStateDto updatePlantState) {
+        try {
+            Long userId = 1L;
+
+            plantService.updatePlantState(userId, updatePlantState);
+
+            return new BaseResponse<>("");
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
