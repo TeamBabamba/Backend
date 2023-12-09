@@ -2,6 +2,7 @@ package babamba.blooming.src.service;
 
 import babamba.blooming.config.BaseException;
 import babamba.blooming.config.Status;
+import babamba.blooming.src.dto.request.UpdatePlantStateDto;
 import babamba.blooming.src.dto.request.PostCreatePlantDto;
 import babamba.blooming.src.dto.request.PutPlantDetailsDto;
 import babamba.blooming.src.dto.response.*;
@@ -360,5 +361,15 @@ public class PlantService {
         );
 
         plantRepository.save(plantEntity);
+    }
+
+    public void updatePlantState(Long userId, UpdatePlantStateDto updatePlantState) {
+        UserEntity userEntity = userRepository.findByIdAndStatus(userId, Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_USER));
+
+        PlantEntity plantEntity = plantRepository.findByIdAndStatus(updatePlantState.getPlantId(), Status.ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_ACTIVATED_PLANT));
+
+        plantEntity.updatePlantState(updatePlantState.getTemperature(), updatePlantState.getHumidity());
     }
 }
