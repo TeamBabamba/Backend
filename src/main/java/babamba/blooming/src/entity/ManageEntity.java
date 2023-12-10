@@ -1,6 +1,8 @@
 package babamba.blooming.src.entity;
 
 import babamba.blooming.config.BaseEntity;
+import babamba.blooming.config.ManageType;
+import babamba.blooming.config.Status;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,7 @@ public class ManageEntity extends BaseEntity {
     @Column(columnDefinition = "INT UNSIGNED")
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String imgUrl;
 
     @Column(nullable = false)
@@ -24,4 +26,12 @@ public class ManageEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plant_id")
     private PlantEntity plant;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "manage_type", nullable = false, length = 8)
+    protected ManageType manageType = ManageType.WATER;
+
+    public void setManageType(ManageType manageType) {
+        this.manageType = manageType;
+    }
 }
