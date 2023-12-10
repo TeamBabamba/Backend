@@ -1,6 +1,7 @@
 package babamba.blooming.src.service;
 
 import babamba.blooming.config.BaseException;
+import babamba.blooming.config.ManageType;
 import babamba.blooming.config.Status;
 import babamba.blooming.src.dto.request.UpdatePlantStateDto;
 import babamba.blooming.src.dto.request.PostCreatePlantDto;
@@ -75,14 +76,16 @@ public class PlantService {
             beforeWeek = beforeWeek.minusDays(weekValue % 7);
 
 
-            List<ManageEntity> manageEntities = manageRepository.findAllByPlantAndCreatedAtAfterAndStatus(plantEntity, beforeWeek, Status.ACTIVE);
+            List<ManageEntity> manageEntities = manageRepository.findAllByPlantAndCreatedAtAfter(plantEntity, beforeWeek);
 
             List<Boolean> weekWater = Arrays.asList(false, false, false, false, false, false, false);
 
             for (ManageEntity manageEntity : manageEntities) {
-                // 일요일 부터 토요일까지 0~6의 값
-                int dayOfWeek = manageEntity.getCreatedAt().getDayOfWeek().getValue() % 7;
-                weekWater.set(dayOfWeek, true);
+                if (manageEntity.getManageType().equals(ManageType.WATER)) {
+                    // 일요일 부터 토요일까지 0~6의 값
+                    int dayOfWeek = manageEntity.getCreatedAt().getDayOfWeek().getValue() % 7;
+                    weekWater.set(dayOfWeek, true);
+                }
             }
 
             getHomeDto.setWeekWater(weekWater);
