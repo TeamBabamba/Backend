@@ -223,7 +223,7 @@ public class PlantService {
             response.setPlantState(recommendManagement);
         }
         else {
-            String question = plantState + "에 걸린" +  plantCategory + "를 치료할 수 있는 대표적인 방법 구체적으로 5가지만 말해줘. 답변의 말투는 해요체로 작성해줘. 마지막으로 답변은 부가 설명 없이 엔터로 구분하여 작성해줘";
+            String question = plantState + "에 걸린" +  plantCategory + "를 치료할 수 있는 대표적인 방법을 구체적으로 5가지만 말해줘. 하나의 방법 당 글자수는 40자 이내로 말해줘. 답변의 말투는 해요체로 작성해줘. 마지막으로 답변은 부가 설명 없이 엔터로 구분하여 작성해줘";
 
             String gptAnswer = chatService.getChatResponse(question, 0.5f, 1000);
 
